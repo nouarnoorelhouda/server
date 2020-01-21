@@ -11,17 +11,15 @@ class ClientThread(threading.Thread):
         self.ip = ip
         self.port = port
         self.clientsocket = clientsocket
-        print("[+] Nouveau thread pour %s %s" % (self.ip, self.port,))
+        print("[+] new thread for %s %s" % (self.ip, self.port,))
 
     def run(self):
         print("Connexion de %s %s" % (self.ip, self.port,))
-
-        r = self.clientsocket.recv(2048)
-        print("Ouverture du fichier: ", r, "...")
-        fp = open(r, 'r+b')
-        self.clientsocket.send(fp.read())
-
-        print("Client déconnecté...")
+        self.clientsocket.send(b'hi, i am the server')
+        #r = self.clientsocket.recv(2048)
+        while 1:
+            print('Client sent:', self.clientsocket.recv(1024).decode())
+        print("Client disconnected...")
 
 
 tcpsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,7 +28,7 @@ tcpsock.bind(("", 1111))
 
 while True:
     tcpsock.listen(10)
-    print("En écoute...")
+    print("Listening...")
     (clientsocket, (ip, port)) = tcpsock.accept()
     newthread = ClientThread(ip, port, clientsocket)
     newthread.start()
